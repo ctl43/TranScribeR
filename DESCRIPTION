@@ -1,0 +1,23 @@
+Package: TranScribeR
+Type: Package
+Title: Tools for analysing transcriptome
+Version: 0.1.0
+Authors@R: c(person("Cheuk-Ting", "Law", role = "cre", email = "infinite.monkeys.with.keyboards@gmail.com"))
+Description: 
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: 
+	Biostrings,
+	GenomicRanges,
+	data.table,
+	IRanges,
+	BiocParallel,
+	S4Vectors
+Imports:
+	S4Vectors
+LinkingTo: Rcpp 
+SystemRequirements: C++14
+RoxygenNote: 7.1.1
+biocViews: 
+	Software
