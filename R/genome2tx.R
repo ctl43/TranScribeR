@@ -1,5 +1,5 @@
 #' @export
-genome2tx <- function(target = NULL, identifer = "name", anno){
+genome2tx <- function(anno, target = NULL, identifer = "name"){
   names(anno) <- mcols(anno)[[identifer]]
   if(is.null(target)){
     site_1  <- anno$thickStart
@@ -35,10 +35,12 @@ genome2tx <- function(target = NULL, identifer = "name", anno){
   tx_site_1 <- exon_cs[site_1_at] - ee2site1_dist
   tx_site_2 <- exon_cs[site_2_at] - (exon_len[site_2_at] - es2site2_dist) + 1
   tx_start <- tx_site_1
-  tx_start[is_m] <- sum(exon_len[is_m]) - tx_site_2[is_m]
+  tx_start[is_m] <- sum(exon_len[is_m]) - tx_site_2[is_m] + 1
   tx_stop <- tx_site_2
   tx_stop[is_m] <- sum(exon_len[is_m]) - tx_site_1[is_m] + 1
   tx_start[is_empty] <- 0
   tx_stop[is_empty] <- 0
-  return(GRanges(seqnames = names(anno), IRanges(unlist(tx_start), unlist(tx_stop))))
+  out <- GRanges(seqnames = names(anno), IRanges(unlist(tx_start), unlist(tx_stop)))
+  seqlengths(out) <- sum(exon_len)
+  return(out)
 }

@@ -10,7 +10,8 @@ get_5putr <- function(cds, min_len = 50){
 #' @export
 get_3putr <- function(cds, transcript_anno, min_len = 50, transcript_length = NULL){
   if(is.null(transcript_length)){
-    len <- sum(transcript_anno[as.character(seqnames(cds))]$blockSizes)
+    len <- seqlengths(cds)
+    #len <- sum(transcript_anno[as.character(seqnames(cds))]$blockSizes)
   }else{
     len <- transcript_length
   }
