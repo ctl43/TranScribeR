@@ -413,13 +413,14 @@ append_noncoding <- function(morf, fa){
       out[[z]] <- GRanges(" ", IRanges(0))
     }
   }
-
-  out <- DataFrame(rbind(morf[,1:3], out[,1:3]),
-                   tx_coord = suppressWarnings(c(morf$tx_coord, out$tx_coord)),
-                   suppressWarnings(rbind(morf[,5:ncol(morf)], out[, 5:ncol(out)])),
-                   coding = c(rep(TRUE, nrow(morf)), rep(FALSE, nrow(out))))
-
-  return(out)
+  
+  tx_coord = c(morf$tx_coord, out$tx_coord)
+  final <- DataFrame(rbind(morf[,1:3], out[,1:3]),
+                     tx_coord,
+                     suppressWarnings(rbind(morf[,5:ncol(morf)], out[, 5:ncol(out)])),
+                     coding = c(rep(TRUE, nrow(morf)), rep(FALSE, nrow(out))))
+  # final <- list(final, tx_coord = tx_coord)
+  return(final)
 }
 
 #'@export
