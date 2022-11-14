@@ -31,7 +31,7 @@ predict_orf <- function(fa, seq = NULL, start_codon = "ATG", starts = NULL,
   phased_start <- split(starts, factor(starts$phase, levels = 0L:2L))
   phased_start <- lapply(phased_start, function(x)split(start(x), seqnames(x)))
   phased_start <- lapply(phased_start, function(x)x - 1L)
-  phased_predicted <- lapply(phased_start, cxx_find_orf, seqs = seq, stop_codon = c("TAG", "TAA", "TGA"))
+  phased_predicted <- lapply(phased_start, cxx_find_orf, seqs = seq, stop_codon = stop_codon)
   phased_predicted <- DataFrame(lapply(phased_predicted, function(x)IntegerList(x) + 1L))
   colnames(phased_predicted) <- c("frame0", "frame1", "frame2")
 
@@ -44,7 +44,7 @@ predict_orf <- function(fa, seq = NULL, start_codon = "ATG", starts = NULL,
   phase <- Rle(rep(0:2, lengths(predicted)))
   predicted <- unlist(predicted, use.names = FALSE)
   extracted <- DNAStringSet(subseq(seq[as.character(seqnames(predicted))], start(predicted), end(predicted)))
-  aa <- translate(extracted)
+  aa <- translate(extracted, no.init.codon = TRUE)
   aa <- sub("\\*$", "", aa)
   aa <- AAStringSet(aa)
   first_codon <- as.character(subseq(extracted, start = 1, end = 3))
