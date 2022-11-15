@@ -44,7 +44,7 @@ morf <- append_noncoding(morf, fa = fa)
 ```
 
 ## Predicting NMD
-###Example
+### Example
 ```r
 nmd_predicted <- predict_nmd(tx_orf = morf$tx_coord, anno = anno)
 morf$nmd <- nmd_predicted
