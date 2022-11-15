@@ -63,7 +63,7 @@ uorf <- get_uorf(morf$tx_coord, morf$phase, fa, anno = bed12,
 ```
 
 ## Format manupulation
-###Example
+### Example
 ```r
 bed12 <- import_bed12(bed12_file)
 gtf <- bed122gtf(bed12)
@@ -72,7 +72,7 @@ export_bed12(bed12, out = path)
 ```
 
 ## Coordinate conversion
-###Example
+### Example
 ```r
 # Converting from genomic coordinate to transcript coordinate
 # For example, converting the coordinate of a start and stop codon in genome to the coordinate in transcript
