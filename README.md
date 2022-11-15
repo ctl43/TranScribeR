@@ -2,20 +2,48 @@
 This package provide useful tools and wrapper for transcriptomic analysis.
 
 ## Predicitng ORF
-### Running ORFfinder (`run_orffinder`)
-A wrapper function for calling ORFfinder, which is provided by NCBI, from the sysetm.
-
-### Getting ORF (`get_orf`)
-Result from ORFfinder was imported and get the longest predicted ORF as the final ORF if there are more than one ORF in a trascript.
-When results from hmmsearch/hmmscan and blastp are available, it will also integrate these information in predicting the final ORF.
+### Getting ORF (`predict_orf` and `get_main_orf`)
+`predict_orf` predicts all open reading frames (ORF) from a sequences based on filters, for examples, 
+start codon, stop 
+codon and the minimum length of proteins, etc.
 If reference protein sequence is supplied (e.g. uniprot), the protein from the predicted ORF will be renamed to the reference protein when there is any matched amino acid sequence in the reference annotation.
-The program does not do any complicated algorithm, (e.g. TransDecoder) to integrate the result from hmmscan/hmmsearch and blastp.
-It just simply marks the ORF as potetinal candidates when protein encoded from the predicted ORF has any domain/similar protein suggested by either hmmscan/hmmsearch or blastp.
+`get_main_orf` integrates the result from hmmscan/hmmsearch and blastp to determine the main ORF. 
+Additionally, it predicts whether the mRNA will be degraded by nonsense-mediated mRNA decay (NMD) if 
+it fulfill certain requirements (See Section, Predicting transcription outcome).
 
 ### Example
 ```r
-run_orffinder(input = "seq.fa", output = "orf.fa")
-orf <- get_orf(orffinder_out = "orf.fa", fa = "seq.fa", pfam_out = "hmmsearch.domtblout", 
-               blastp_out = "blastp.outfmt6", ref_prot_fa = "uniprot.fasta", min_len = 50)
-write_fasta(as.character(orf[mcols(orf)$main_orf]), "main_orf.fa")
+# Predicting ORF and assigning protein ID
+predicted <- predict_orf(fa, seq = NULL, start_codon = "ATG", starts = NULL, 
+		stop_codon = c("TAG", "TAA", "TGA"), min_aa = 30, ref_prot_fa = NULL, 
+		assign_prot_id = TRUE, with_stop = FALSE) 
+
+# Predicting the main ORF out of many predicted ORF
+orf <- get_main_orf(predicted_orf = predicted,
+                    anno = isoform_annotation_bed12,
+                    pfam_out = NULL, 
+                    blastp_out = NULL,
+                    ref_start_codon = NULL, 
+                    min_aa = 50, 
+                    label_main_only = TRUE, 
+                    predict_nmd = TRUE)
+morf <- orf[orf$main_orf,]
+
+# Appending those non-coding mRNA
+morf <- append_noncoding(morf, fa = fa)
 ```
+
+## Predicting regulatory transcription outcome
+
+## Predicting upstream ORF (uORF) (`get_uorf`)
+It predicts uORF after getting the main ORF from above command or other methods. In addition, users can supply reference start site retrieved by ribo-seq or online annotations to constraint the uORF prediction.
+
+### Example
+```r
+uorf <- get_uorf(morf$tx_coord, morf$phase, fa, anno = bed12, 
+         ref_start, 
+         start_codons = c("ATG", "TTG", "ACG", "CTG", "GTG"), 
+         stop_codons = c("TAG", "TAA","TGA"), 
+         min_aa = 2)
+```
+
